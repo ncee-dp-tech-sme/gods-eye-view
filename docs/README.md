@@ -285,7 +285,7 @@ For typical solo exploring on your own machine: **expect $0 per month** unless y
 
 ---
 
-*See also: [SECURITY.md](SECURITY.md) for how your API keys are protected, and [DATA_SOURCES.md](DATA_SOURCES.md) for details on every live data feed.*
+*See also: [SECURITY.md](../SECURITY.md) for how your API keys are protected, and [DATA_SOURCES.md](../DATA_SOURCES.md) for details on every live data feed.*
 
 ## Disclaimer
 - Created by Erwin Friethoff, Security Architect at IBM. 
