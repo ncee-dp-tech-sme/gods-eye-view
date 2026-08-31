@@ -11,7 +11,7 @@
 A container — think of it as a self-contained copy of the app running on your computer — that you can open in your browser like any normal website.  It shows a photorealistic, interactive 3D globe with live aircraft, ships, satellites, earthquakes, traffic, public cameras, and more.
 
 > This repository is forked from [bilawalsidhu/gods-eye-view](https://github.com/bilawalsidhu/gods-eye-view) All kudos to them.
-> This is a containerized version of the original work, no additional features. The original README for this project can be read at [README_gods-eye-view](../ORIGINAL_gods-eye-view_README.md)
+> This is a containerized version of the original work, no additional features. The original README for this project can be read at [README_gods-eye-view](https://github.com/ncee-dp-tech-sme/gods-eye-view/blob/feature/bob-containerization/ORIGINAL_gods-eye-view_README.md)
 
 ---
 
