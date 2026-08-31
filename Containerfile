@@ -3,6 +3,7 @@
 # Changed: Tue Sep  1 00:00:00 CEST 2026 — upgraded base image to nodejs-24-minimal (satisfies >=24.14 engine constraint)
 # Changed: Tue Sep  1 00:00:00 CEST 2026 — removed explicit curl install; nodejs-24-minimal already ships curl-minimal
 # Changed: Tue Sep  1 00:00:00 CEST 2026 — chown node_modules to uid 1000 after npm ci so Vite cache writes succeed at runtime
+# Changed: Tue Sep  1 01:34:45 CEST 2026 — invoke vite directly instead of via npm run to suppress SIGINT error noise on Ctrl+C; redirect npm logs to /tmp
 #
 # ─────────────────────────────────────────────────────────────────────────────
 # Plain-English explanation of what this file does:
@@ -63,7 +64,10 @@ COPY --chown=1000:0 package.json package-lock.json ./
 # chown -R afterwards: npm ci runs as root and creates node_modules/ owned by
 # root.  Vite writes a .vite/ cache into node_modules/ at runtime (as uid 1000),
 # so ownership of the whole tree must be handed over before we drop privileges.
+# Redirect npm's log directory to /tmp so uid 1000 can always write to it.
+# Without this, npm prints a spurious "Log files were not written" error on shutdown.
 RUN npm ci && chown -R 1000:0 /app/node_modules
+ENV NPM_CONFIG_LOGS_DIR=/tmp/npm-logs
 
 # ── Copy application source ───────────────────────────────────────────────────
 # Everything not listed in .containerignore is copied here.
@@ -86,4 +90,6 @@ HEALTHCHECK --interval=15s --timeout=5s --start-period=45s --retries=3 \
 # ── Start ─────────────────────────────────────────────────────────────────────
 # API keys are injected at run time via --env-file .env (see run.sh).
 # They are NEVER stored in the image itself.
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "4173"]
+# Invoke vite directly (not via `npm run`) so that Ctrl+C (SIGINT) terminates
+# cleanly without npm printing a spurious "command failed / signal SIGINT" error.
+CMD ["node_modules/.bin/vite", "--host", "0.0.0.0", "--port", "4173"]
