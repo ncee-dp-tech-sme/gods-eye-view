@@ -11,9 +11,26 @@
 A container — think of it as a self-contained copy of the app running on your computer — that you can open in your browser like any normal website.  It shows a photorealistic, interactive 3D globe with live aircraft, ships, satellites, earthquakes, traffic, public cameras, and more.
 
 > This repository is forked from [bilawalsidhu/gods-eye-view](https://github.com/bilawalsidhu/gods-eye-view) All kudos to them.
-> This just a ccontainerized version of the original work, no additional features. The original README for this project can be read at [README_gods-eye-view](README_gods-eye-view.md)
+> This is a containerized version of the original work, no additional features. The original README for this project can be read at [README_gods-eye-view](README_gods-eye-view.md)
 
-> The code and configuration files can be found in this repository under the feature/bob-containerization branch https://github.com/ncee-dp-tech-sme/gods-eye-view
+---
+
+## Step 0 — Download the code
+
+You don't need Git or any developer tools to get the files.  Just use your browser.
+
+1. Click this link to download everything as a ZIP file:
+   **[⬇️ Download gods-eye-view.zip](https://github.com/ncee-dp-tech-sme/gods-eye-view/archive/refs/heads/feature/bob-containerization.zip)**
+
+2. Once downloaded, find the ZIP file (usually in your **Downloads** folder) and **unzip / extract** it.
+   - **macOS:** double-click the ZIP file — it extracts automatically.
+   - **Windows:** right-click the ZIP file → **"Extract All…"** → click **Extract**.
+   - **Linux:** `unzip gods-eye-view-main.zip`
+
+3. You'll now have a folder called **`gods-eye-view-main`**.  Open it — all the files are inside.
+
+4. When this guide tells you to open a terminal "in the `gods-eye-view` folder", it means this extracted folder.
+
 ---
 
 ## Before you start — what you need installed
@@ -24,8 +41,6 @@ You need **Podman** (the program that runs the container).  It's free.
   - Don't have Homebrew?  Install it first at https://brew.sh
 - **Windows:** Download the installer from https://podman.io/getting-started/installation
 - **Linux:** `sudo apt install podman` (Ubuntu/Debian) or `sudo dnf install podman` (Fedora/RHEL)
-
-You can also use **Docker Desktop** (https://www.docker.com/products/docker-desktop/) if you prefer — the `run.sh` script detects whichever one you have installed.
 
 ---
 
