@@ -1,377 +1,280 @@
-<div align="center">
+# God's Eye View — Setup Guide for Non-Developers
 
-# 🌐 God's Eye View
-
-### A spy-satellite simulator in your browser — then you realize the sources are public and the data is real.
-
-Photorealistic 3D globe. Live aircraft, ships, satellites, earthquakes, traffic, and public cameras, with clearly labeled modeled views where a live feed is unavailable. Hands-free voice control powered by a realtime AI agent.
-
-*No place left behind.*
-
-![Orbital HUD, a tracked live globe, FLIR terrain — then OPEN SOURCED](docs/media/hero-open-source-reveal.gif)
-
-<a href="https://www.youtube.com/@bilawalsidhu">
-  <img src="docs/media/youtube-popular-videos.png" alt="The God's Eye View video series on YouTube" width="100%">
-</a>
-
-▶️ **From the project behind the viral God's Eye View series** *(formerly WorldView)* — [5M+ on YouTube](https://youtube.com/playlist?list=PL6qSg2I-7_koPbDnSMo0QeeHX_RknA2uv&si=nBGYMoHWQw41v93Q)
-
-</div>
+> **You don't need to understand code to follow this guide.**
+> Every step is written for someone who has never set up a developer project before.
+> If a step says "⚠️ This could cost money", read it carefully and confirm before continuing.
 
 ---
 
-<div align="center">
+## What you'll end up with
 
-**[Quick Start](#-quick-start) · [First Five Minutes](#-the-first-five-minutes) · [Talk to It](#-talk-to-it) · [What's Live](#-whats-on-the-globe) · [Under the Hood](#-under-the-hood) · [Keys](#-api-keys) · [Costs](#-what-it-actually-costs)**
+A container — think of it as a self-contained copy of the app running on your computer — that you can open in your browser like any normal website.  It shows a photorealistic, interactive 3D globe with live aircraft, ships, satellites, earthquakes, traffic, public cameras, and more.
 
-</div>
+> This repository is forked from [bilawalsidhu/gods-eye-view](https://github.com/bilawalsidhu/gods-eye-view) All kudos to them.
+> This just a ccontainerized version of the original work, no additional features. The original README for this project can be read at [README_gods-eye-view](README_gods-eye-view.md)
+
+> The code and configuration files can be found in this repository https://github.com/ncee-dp-tech-sme/gods-eye-view
+---
+
+## Before you start — what you need installed
+
+You need **Podman** (the program that runs the container).  It's free.
+
+- **macOS:** `brew install podman && podman machine init && podman machine start`
+  - Don't have Homebrew?  Install it first at https://brew.sh
+- **Windows:** Download the installer from https://podman.io/getting-started/installation
+- **Linux:** `sudo apt install podman` (Ubuntu/Debian) or `sudo dnf install podman` (Fedora/RHEL)
+
+You can also use **Docker Desktop** (https://www.docker.com/products/docker-desktop/) if you prefer — the `run.sh` script detects whichever one you have installed.
 
 ---
 
-## 🌍 Why This Exists
+## Step 1 — Get your Google Maps API key (Required) 🔴
 
-**You asked, so it's happening.** God's Eye View is open source. Track the world live. Talk to it. Break it. Extend it.
-
-Most open-source intelligence is a pile of browser tabs. The signals are abundant, but the *interface* is the bottleneck. God's Eye View turns those signals into a **place**: the world is already broadcasting — flight transponders, ship beacons, orbital elements, seismographs, public cameras — and this makes it visible on a photorealistic 3D Earth in real time. No classified clearance required; it's public signal all the way down, and the interface runs in your browser, under your control.
-
-> Half the magic is that it looks like a forbidden cockpit. The other half is that every line of code is inspectable.
-
-The live layers are grounded in public feeds: the airliner crossing your screen is reporting telemetry, the camera is installed at a published location, and the ISS position is propagated from current orbital elements. The client deliberately renders flights one polling interval behind real time so it can interpolate smoothly. Some experiences are modeled rather than live: keyless traffic is labeled as a simulation, camera poses are estimated until calibrated, and launch ascent playback is marked `RECONSTRUCTED ESTIMATE`. Each layer keeps its source and freshness state visible, including partial, delayed, simulated, and unavailable states.
-
----
-
-## 🎛️ What This Thing Does
-
-<div align="center">
-
-[![YouTube video about the God's Eye View open source release](https://img.youtube.com/vi/GRJaKcXZS94/maxresdefault.jpg)](https://www.youtube.com/watch?v=GRJaKcXZS94)
-
-▶️ **[The full walkthrough of everything below, on YouTube](https://www.youtube.com/watch?v=GRJaKcXZS94)**
-
-</div>
-
-- **🛩️ Cockpit view:** Ride inside a tracked flight — the camera holds the terrain under you all the way down.
-- **📡 Contacts:** A 250 km roster of everything near your target — step through live aircraft and drop into any cockpit.
-- **🎯 Click-to-track anything:** Camera locks on, draws a fading trail, surfaces full metadata — and a tracked fire or vessel hands you off to the nearest live camera in one click.
-- **🖊️ Voice whiteboard:** Speak annotations onto the world — real boundary polygons, marks, and routes.
-- **🛫 3D hangar:** Real per-class aircraft models — 787, ATR-72, Citation, Bell 206, MQ-9 — and a tracked contact swaps from glyph to 3D model as you close in.
-- **🎨 Reskin reality:** GLSL sensor looks over the normal globe — CRT, NVG, FLIR/thermal, Noir, Snow.
-- **🟩 Detection overlay:** Screen-space bounding boxes and IDs on everything in view.
-- **🎖️ Military HUD:** Tactical heads-up display with intelligence-style telemetry.
-- **🌐 Global Context:** Stage the full situational picture with one switch — and get your exact view back when you leave.
-- **🎥 Scene director:** Capture cinematic camera tours for clips and demos.
-- **🔗 Share Links:** Camera, style, layers, and even one tracked target serialize into a URL — a live target is a handoff, not a bookmark.
-- **🏠 Reset Globe:** One control — or one sentence — back to the full Earth.
-
----
-
-## ⚡ Quick Start
-
-Requires Node.js 24.14.x or 26.x (enforced by `package.json`).
-
-1. Copy `.env.example` → `.env` and set `GOOGLE_MAPS_API_KEY`.
-2. Install and run:
-
-```bash
-npm install
-npm run dev -- --host localhost --port 4173
-```
-
-3. Open **`http://localhost:4173`**. Cold start settles in under two seconds on a recent laptop (median 1.86 s in a point-in-time M5/Chrome capture — [docs/PERFORMANCE.md](docs/PERFORMANCE.md); a comparison baseline, not a hardware requirement). A first-run card offers to stage a mission for you — **Live Contacts**, **Space Missions**, **Environmental** — or leaves you to explore manually.
-
-> [!TIP]
-> **Not a coder? Have an AI do this whole page for you.** A one-click installer is in the works — until then, install a coding agent ([Claude Code](https://claude.com/claude-code), [Codex](https://openai.com/codex/), [Cursor](https://cursor.com), or [Antigravity](https://antigravity.google)) and paste this:
+> ⚠️ **This step involves a service that charges money** — but Google gives you **1,000 free sessions per month**, which is very hard for a single person to use up during normal exploring.  A "session" lasts up to 3 hours of globe rendering.
 >
-> ```text
-> Clone https://github.com/bilawalsidhu/gods-eye-view and set it up on my machine.
-> Install everything it needs, walk me through getting the required Google Maps API
-> key step by step (plus any optional free keys I want), put the keys in .env, and
-> help me set a billing alert and a usage quota on the Google key so I can't
-> overspend. Then start the dev server and open it in my browser. I'm not a
-> developer — explain what you're doing as you go, and ask me before any step
-> that could cost money.
-> ```
+> **You will set up a spending cap in Steps 1d and 1e below before any charges could ever reach you.**  Do not skip those sub-steps.
 
-**That one key is the whole entry fee.** Everything in this README is color-coded — 🟢 needs nothing · 🟡 free key · 🔴 metered — and Google Maps is the only 🔴 you need: it buys the photorealistic planet, and most of the globe lights up 🟢 from there. For typical solo exploring, expect **$0 on most layers** and pocket change on the metered two: Google currently gives **1,000 free 3D-tile sessions a month** — each good for up to three hours of rendering, which is very hard for one person to exhaust — and voice carries a built-in $5 session cap. Full map in [Keys & Costs](#-api-keys), full honest breakdown in [What it actually costs](#-what-it-actually-costs).
+The Google Maps key is the only required key.  Without it the 3D photorealistic globe will not load.  Everything else in this guide is optional and free.
 
-The dev server binds to **localhost** — your keys stay on your machine. Sharing on a LAN safely is covered in [Sharing an instance](#-sharing-an-instance) and [SECURITY.md](SECURITY.md).
+### 1a. Create a Google Cloud account (if you don't have one)
 
-**macOS shortcut:** `./scripts/dev-fresh.sh` clears the Vite cache and pulls your keys straight from the Keychain.
+1. Go to https://console.cloud.google.com
+2. Sign in with your Google account (the same Gmail you use for everything else is fine).
+3. If this is your first visit, Google will ask you to agree to their terms and set up a billing account.  **You will not be charged yet** — Google Cloud requires a payment method on file but gives every new account $300 of free credits that cover months of typical usage.
 
----
+### 1b. Create a project
 
-## 🕐 The First Five Minutes
+1. At the top of the page, click the project dropdown (it may say "My First Project" or show a project name).
+2. Click **"New Project"**.
+3. Give it a name like `gods-eye-view` and click **Create**.
+4. Wait a few seconds for it to be created, then select it from the same dropdown.
 
-No account, no signup. The first-run card will offer to stage a mission for you — or run this gauntlet yourself. Somewhere in these five minutes it stops feeling like a demo:
+### 1c. Enable the Map Tiles API
 
-1. **Light up the sky.** Take the **Live Contacts** mission (or turn on **Flights** yourself) — thousands of live aircraft, gliding on real telemetry, detection mesh already reading the scene. Click one: the camera locks on, a trail draws behind it, and its live telemetry card comes up.
-2. **Take the controls.** Hit **COCKPIT** on your tracked plane and ride it down, switching sensors mid-flight: NVG into Ironbow FLIR. The cockpit carries its own briefing strip — nearby live signals, regional headlines, and real local weather, with an opt-in **WX** mode that renders volumetric clouds from actual observations around your aircraft — and **Contacts** keeps the 250 km roster one click (or one sentence) away: jump plane to plane and fall straight into the next cockpit.
+The Map Tiles API is the specific Google service that provides the 3D photorealistic imagery.
 
-![Riding with a live aircraft in cockpit view while switching sensor modes](docs/media/06-cockpit-ar.gif)
+1. In the search bar at the top of the Google Cloud Console, type **`Map Tiles API`** and click the result.
+2. Click the blue **"Enable"** button.
+3. Wait a moment for it to activate.
 
-![Jumping between live aircraft and falling straight into a cockpit view](docs/media/12-switch-aircraft-cockpit.gif)
+### 1d. Set a budget alert ⚠️ (Do this BEFORE creating the key)
 
-3. **Drop into a busy airport.** Search one and descend to the taxiways with **3D** aircraft on — grounded contacts, taxi trails, the whole apron working in real time.
+This is your safety net.  It sends you an email warning before you get anywhere near a real charge.
 
-![Moving from a full airport overhead down to close taxiway inspection with 3D flight models](docs/media/start-here/airport-ground-traffic-google-3d.gif)
+1. In the left-hand menu, find and click **"Billing"**.
+   - If you don't see it, click the ☰ (hamburger) menu at the top-left first.
+2. Click **"Budgets & alerts"**.
+3. Click **"Create budget"**.
+4. Fill in the form:
+   - **Name:** `gods-eye-view-budget`
+   - **Scope:** leave as-is (it will apply to your whole project)
+   - **Amount:** set to `5` (this means $5 USD — you'll be notified before spending this much)
+   - **Alert thresholds:** leave the defaults (50%, 90%, 100%)
+   - **Email notifications:** make sure your email is listed
+5. Click **"Finish"**.
 
-4. **Look through a public camera.** Turn on **CCTV** over Austin, London, or California. The feeds aren't webcam embeds — they project *into* the 3D city. Cycle coverage to **VIEWSHED** and every camera draws its estimated coverage volume — where it reaches, and where it goes blind.
+✅ You'll now get an email warning if you ever approach $5 in charges.  Normal single-person use of this app should cost $0 most months.
 
-![Diving into an Austin intersection with a live public camera projected into the 3D scene](docs/media/03-austin-cctv.gif)
+### 1e. Set a daily quota cap ⚠️ (Do this BEFORE creating the key)
 
-5. **Paint the streets with rush hour.** Turn on **Traffic** and dive below ~8 km — per-vehicle flow colors to the real jams (with a TomTom key; keyless it's a labeled simulation). Then hit **NEAREST** in the CCTV panel and watch the jam through the camera pointed at it.
+A budget alert *tells* you about spending.  A quota cap *stops* it.
 
-![Diving from city-scale live congestion straight into an intersection's public camera](docs/media/05-traffic-to-cctv.gif)
+1. In the left menu, go to **"APIs & Services"** → **"Enabled APIs & services"**.
+2. Click on **"Map Tiles API"** in the list.
+3. Click the **"Quotas & System Limits"** tab at the top.
+4. Find **"Map session tokens per day"** in the list.
+5. Click the pencil ✏️ icon to edit it.
+6. Set the limit to `50` (that's 50 sessions per day — more than enough for personal use, and it prevents any runaway spending).
+7. Click **"Save"**.
 
-6. **Track something in orbit.** Turn on **Satellites** and click the ISS — you ride along at orbital distance, orbit ring and all.
+✅ You now have a hard daily ceiling.  Even if something went wrong, you could never spend more than a few cents per day.
 
-![Tracking the ISS along its orbital path as it crosses over Ukraine](docs/media/14-iss-over-ukraine.gif)
+### 1f. Create the API key
 
-7. **Switch the optics.** Tap `1`–`7` — CRT, NVG, FLIR — and the whole live planet re-renders through a different sensor.
+1. In the left menu, go to **"APIs & Services"** → **"Credentials"**.
+2. Click **"+ Create Credentials"** at the top, then choose **"API key"**.
+3. A pop-up shows your new key — it looks like `AIzaSy...` (a long string of letters and numbers).
+4. Click **"Copy"** to copy it.  **Do not close this pop-up yet.**
 
-![Cycling a dense live globe through CRT, FLIR, and NVG in one continuous view](docs/media/01-style-sweep.gif)
+### 1g. Restrict the key (important security step)
 
-8. **Talk to it** *(needs an OpenAI key)*: *"Take me to LAX and select the nearest airborne aircraft."*
-9. **Come home.** Hit **Reset Globe** — or just say *"zoom out to a globe view."*
+An unrestricted API key could be used by anyone who finds it.  Restricting it means it only works for this specific app.
 
-**Keyboard:** `1`–`7` visual styles · `H` HUD · `D` detection · `C` cockpit · `Esc` out.
+1. In the same pop-up, click **"Edit API key"** (or find the key in the Credentials list and click its name).
+2. Under **"Application restrictions"**, choose **"HTTP referrers (websites)"**.
+3. Click **"Add an item"** and type: `http://localhost:4173/*`
+4. Click **"Add another item"** and type: `http://127.0.0.1:4173/*`
+5. Under **"API restrictions"**, choose **"Restrict key"**, then select **"Map Tiles API"** from the dropdown.
+6. Click **"Save"**.
 
----
+✅ The key is now locked to only work when used from your local machine on port 4173.
 
-## 🎙️ Talk to It
+### 1h. Put the key in your .env file
 
-> Voice needs an **OpenAI key**. Without one the entire app still runs — the mic button just reports voice is unavailable. The same key drives the **AI HUD summary**: a terse, five-word intelligence-style readout of the current view that regenerates as you move.
-
-Click **GEV MIC**, grant the microphone, and just talk. This is more than a voice-controlled remote:
-
-- **🧠 It knows what it's looking at.** The agent pulls live scene context before answering — including coordinates, street names, active layers, and view scale. Ask *"what city is this?"* mid-flight and it knows.
-- **🎯 Entity Q&A.** Click any plane, ship, or datacenter and ask *"what's this?"* It answers using the object's live telemetry.
-- **👁️ Visual grounding.** At street level, it reads a viewport screenshot to identify legible signage and building names, and is instructed never to hallucinate labels.
-- **🎬 Cinematic framing.** *"Show me the planes overhead"* pulls the camera back, angles it, and frames the live traffic like a director.
-- **🔒 Honest and secure.** The agent only confirms actions that succeeded. Your `OPENAI_API_KEY` never touches the browser; the client only gets a short-lived session token.
-
-Twenty-eight tools, four jobs — the commands below come straight from the product's voice test suite and tool playbook:
-
-**🎥 Direct it** — drone-operator camera verbs:
-> 🗣️ *"Take me to Tokyo."* · *"Orbit around this area slowly."* · *"Draw the walking route from the Capitol to Zilker Park."* → *"Fly the route we just drew."* · *"Zoom out to a globe view."*
-
-**🖊️ Annotate it** — a whiteboard over the real world:
-> 🗣️ *"Outline the state of Texas."* · *"Annotate the Texas State Capitol and its grounds"* — it draws the **actual enclosing boundary**, not a circle. · *"How far is the Eiffel Tower from the Louvre?"* — a connector arrow appears and it speaks the distance. Everything persists until you say *"clear the map."*
-
-![Zilker Park and Lady Bird Lake drawing onto the 3D city as persistent vector annotations, by voice](docs/media/01-voice-annotate-zilker.gif)
-
-![A spoken distance measurement spanning an airport, inspected from orbit](docs/media/04-airport-distance.gif)
-
-**🔎 Interrogate it** — analyst queries against the live layers:
-> 🗣️ *"How many flights are over Texas right now?"* · *"Which ships are headed to Oakland?"* · *"What is the biggest fire near Los Angeles?"* · *"Is anything flying above forty thousand feet?"* · *"When does the ISS pass over next?"*
-
-**🎛️ Operate it** — the whole console, hands-free:
-> 🗣️ *"Switch to night vision and turn on the flights layer."* · *"Turn on the camera viewsheds."* · *"Play a news radio station near Austin."* · *"Track that plane."* → *"Enter Cockpit."*
-
-**And the rapid-fire tier** — one sentence each:
-> 🗣️ *"Show me global infrastructure."* (stages the layers and pulls back to the globe) · *"Play Orbital Watch."* (a full cinematic scene) · *"Set detection density to fifty percent."* · *"Next contact — helicopters only."* (mid-cockpit) · *"Show me space missions."* · *"Switch to Bing aerial."* · *"Sharpen the image a touch."* · *"Switch to the tactical layout."* · *"What's turned on right now?"*
-
-![The globe populating with the world's radio stations as another live layer](docs/media/15-global-radio-layer.gif)
-
-*Ask for radio near anywhere and the globe starts broadcasting — every station is a real place you can fly to.*
+1. In the `gods-eye-view` folder, find the file called `.env.example`.
+2. Make a copy of it and name the copy `.env` (no `.example` at the end).
+   - On macOS/Linux in Terminal: `cp .env.example .env`
+   - On Windows: right-click the file, Copy, Paste, rename to `.env`
+3. Open `.env` in any text editor (Notepad, TextEdit, VS Code — anything works).
+4. Find the line that says: `GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here`
+5. Replace `your_google_maps_api_key_here` with the key you copied in step 1f.
+6. Save the file.
 
 ---
 
-## 🛰️ What's on the Globe
+## Step 2 — Optional free keys (add as many or as few as you like)
 
-Thirteen live layers. **Ten of them need nothing at all** — no key, no account, no signup.
+All of these are completely free.  Each one unlocks an additional layer in the app.  You can skip any or all of them and come back later.
 
-| Layer | What you get | Source | Auth |
-|-------|--------------|--------|------|
-| 🗺️ **Map Stack** | Google Photorealistic 3D, Bing aerial, OSM | Google / Ion / OSM | 🔴 Google (required) · 🟡 ion for Bing · 🟢 OSM |
-| ✈️ **Live Flights** | Thousands of live aircraft + route history | OpenSky + adsb.lol | 🟢 (🟡 optional for more polling credits) |
-| 🎖️ **Military Flights** | ADS-B military traffic in amber | adsb.lol | 🟢 |
-| 🚢 **Live Vessels** | Thousands of ships worldwide | AISStream | 🟡 |
-| 🛰️ **Satellites** | A roughly 840-object core catalog, color-coded by class with a live legend — the **DENSE** chip drops in the whole Starlink shell | CelesTrak | 🟢 |
-| 🌍 **Earthquakes** | Global seismic activity, last 24h | USGS | 🟢 |
-| 🚗 **Traffic** | Live congestion driving per-vehicle flow at street level — dive below ~8 km and the dots color to real jams. Keyless it's an approximate simulation | TomTom + OSM | 🟢 (🟡 TomTom makes it real — get one) |
-| 📹 **CCTV Mesh** | ~800 public cameras projected *into* the 3D space — Austin · California (Caltrans) · London (TfL). Positions are published; poses are estimated priors **you calibrate by dragging a gizmo on the camera itself** | City APIs | 🟢 |
-| 📻 **Radio** | Geolocated world radio with an **analog tuner** — drag the needle across up to 750 stations and the globe flies to each broadcaster | Radio Browser / broadcasters | 🟢 |
-| 🚲 **Bikeshare** | Live station availability | GBFS | 🟢 |
-| 🔥 **Active Fires** | Live NASA FIRMS detections, trailing 24h | NASA FIRMS | 🟡 |
-| 🚀 **Space Missions** | Rolling 30-day launches with payload, stage, and recovery detail | Launch Library 2 | 🟢 (🟡 optional token raises the allowance) |
-| 🎖️ **Mapped Installations** | Viewport-bounded military-site context from community mapping — incomplete by nature, and labeled that way | OpenStreetMap | 🟢 |
+### 🟡 Cesium Ion token — unlocks Bing satellite map styles
 
-**Also on the globe:** neighborhood overlays · an optional cockpit WX cloud effect. **Bundled static infrastructure:** Datacenters (4,351), Dams (704), and Submarine Cables (712).
+Cesium Ion provides alternative satellite imagery (Bing Maps).  The app works without it — you just won't have those map style options.
 
-**Missing a layer you want?** Open an issue — or add it and send the PR.
+1. Go to https://ion.cesium.com and create a free account.
+2. After signing in, click your profile icon → **"Access tokens"**.
+3. Click **"Create token"**.
+4. Give it a name like `gods-eye-view`.
+5. Under **"Scope"**, select only **"assets:read"**.
+6. Click **"Create"** and copy the token.
+7. In your `.env` file, find the line: `CESIUM_ION_TOKEN=`
+8. Paste the token after the `=` sign.
 
----
+### 🟡 AISStream key — unlocks the live ships layer
 
-## 🎖️ Field Missions
+AISStream provides real-time ship positions from AIS transponders worldwide.  Free forever for open-source use.
 
-Once the basics click, run these:
+1. Go to https://aisstream.io and create a free account.
+2. After signing in, go to **"API Keys"** and click **"Create New API Key"**.
+3. Copy the key.
+4. In your `.env` file, find: `AISSTREAM_API_KEY=`
+5. Paste the key after the `=` sign.
 
-| Mission | How |
-|---|---|
-| **🚁 Ask the planet** | *"Why are all these military helicopters flying in circles?"* Select a military track — it silently backfills ~24 h of real trace history — and see what it's been doing, resolved as stacked 3D loops. |
-| **✈️ Final approach** | Click-track an airliner lining up for a runway, hop into the **cockpit**, and ride it down. |
-| **🌃 Night watch** | Fly to your own city, switch to **NVG**, and let the detection mesh and HUD read the scene. |
-| **🚢 Port call** | Vessels on over the Port of Long Beach. Click a tanker for its tactical card and wake trail — then hit **NEAREST** in the CCTV panel and look at the same water through a public camera. |
-| **📻 Tokyo FM** | Orbit Shibuya with the **Radio** layer on — then drag the analog tuner needle: every position snaps to a real station and the globe flies to whoever's broadcasting. |
-| **🔥 Fire line** | FIRMS over California. Click a detection — the camera dives to it — read the intensity, then hit **NEAREST** in the CCTV panel for a ground view. |
-| **🚶 Ask for a walking route** *🎙️* | Tell the world where you want to go and watch a real street-following route trace itself through the 3D city — then *"fly it"*: banked turns, eased ends, a camera that leads the path like a drone shot. |
-| **📏 Measure LAX to DFW** *🎙️* | *"How far is LAX from DFW?"* — an arrow spans the country, the distance lands in the caption, and the endpoints stay pinned to the real world as you orbit. |
-| **🚀 Launch replay** | Open **Space Missions**, pick a launch from the last 30 days, and ride the T-minus countdown through ascent to orbit — scrub it at 0.25×–4×. Labeled `RECONSTRUCTED ESTIMATE`, because it is one. |
-| **🪦 Walk the boneyard** | Fly from regional context down into dense, fully resolved rows of retired aircraft. |
-| **🏗️ Orbit Three Gorges** | Sweep the dam and its terrain at a glance — then flip on the **Dams** layer and find 703 more. |
-| **🌊 Trace the backbone** | Dive to the Bahamas with **Submarine Cables** on — labeled routes reveal beneath the water, 712 of them worldwide. |
+### 🟡 TomTom key — unlocks live traffic flow
 
-*🎙️ = voice missions — they need an OpenAI key.*
+Without this key the app shows a simulated traffic layer (clearly labelled as such).  TomTom's free tier gives you 50,000 tile requests per day — more than enough for personal use.
 
-![Resolving a selected aircraft's recent flight path into stacked 3D loops above the terrain](docs/media/07-helicopter-loops.gif)
+1. Go to https://developer.tomtom.com and create a free account.
+2. After signing in, go to **"My Apps"** → **"Create a new app"**.
+3. Give it a name and click **"Next"**.  Select **"Traffic"** as the product.
+4. Copy the API key shown on your new app's page.
+5. In your `.env` file, find: `TOMTOM_API_KEY=`
+   - The line is commented out (starts with `#`) — remove the `#` first, then add your key.
 
-*Ask the planet: a military contact's last ~24 hours of real trace history, resolved as stacked 3D loops.*
+### 🟡 NASA FIRMS key — unlocks the active fires layer
 
-![Asking for a walking route and flying the generated path through the 3D city](docs/media/10-walking-route-flythrough.gif)
+NASA's FIRMS (Fire Information for Resource Management System) provides near real-time fire detections from satellites.  Completely free.
 
-*"Draw the walking route… now fly it" — banked turns, eased ends, the camera leading the path like a drone shot.*
+1. Go to https://firms.modaps.eosdis.nasa.gov/api/map_key/
+2. Fill in the short form (name + email) and click **"Request MAP_KEY"**.
+3. You'll receive an email with your key within a few minutes.
+4. In your `.env` file, find the line that says: `# FIRMS_MAP_KEY=`
+5. Remove the `#` at the start of the line and paste your key after the `=`.
 
-![Descending from regional context into dense rows of retired aircraft at the boneyard](docs/media/08-boneyard.gif)
+### 🟡 OpenSky credentials — improves aircraft data quality
 
-*Walk the boneyard: rows of retired airframes, fully resolved in 3D.*
+Without credentials, aircraft data still works (anonymous access) but with a stricter rate limit.  If you'd like more frequent updates, create a free account.
 
-![A reconstructed Falcon 9 ascent climbing and curving into its projected orbit](docs/media/08-falcon9-replay.gif)
+1. Go to https://opensky-network.org and click **"Register"**.
+2. After verifying your email, go to **"My OpenSky"** → **"Account"**.
+3. Under **"OAuth Client Credentials"**, click **"Generate credentials"**.
+4. Copy the `client_id` and `client_secret` values.
+5. In your `.env` file, find and fill in:
+   ```
+   OPENSKY_AUTH_MODE=oauth
+   OPENSKY_CLIENT_ID=<your client_id here>
+   OPENSKY_CLIENT_SECRET=<your client_secret here>
+   ```
 
-*Launch replay: a Falcon 9 ascent, labeled `RECONSTRUCTED ESTIMATE`, scrubbable 0.25×–4×.*
+### 🔴 OpenAI key — unlocks voice control and AI HUD summary (costs money)
 
-![Diving into the Bahamas and revealing labeled submarine cable routes beneath the globe](docs/media/09-undersea-cables.gif)
+> ⚠️ **OpenAI charges per minute of voice conversation.**  The app has a built-in
+> $5 per-session cap.  Visit https://platform.openai.com → **Settings → Limits**
+> to set a monthly usage limit before enabling this.
+>
+> **Ask before continuing if you are unsure about the cost.**
 
-*Trace the backbone: the submarine cable routes under the Bahamas.*
-
----
-
-## 🔧 Under the Hood
-
-Some of the engineering that makes it feel real rather than like a tech demo:
-
-- **World-stable icons.** Aircraft and ships point along their *true real-world heading* at every camera angle — tracked or not, looking straight down or across the horizon — via per-frame screen-space course projection. No spinning, no viewport-locking.
-- **Smooth motion from choppy data.** Live feeds arrive every 15–30s; the globe renders one interval behind real time and interpolates between known fixes. Dead reckoning fills the gaps.
-- **Honest satellites.** SGP4 propagation with orbit rings that stay locked to their satellites via GMST realignment — no drift, no per-second flicker.
-- **Sits on the real ground.** Entity heights run through a real vertical datum — geoid-aware, sampled against the *rendered* terrain mesh — so aircraft park on aprons and cameras stand on street corners instead of floating.
-- **Spends your quota like it's its own.** The paid feeds run behind cached, budget-governed proxies — an OpenSky credit governor, a TomTom daily tile budget, disk-cached TLEs — so an afternoon of exploring doesn't torch an API allowance.
-- **Local-first key handling.** Secret-bearing providers such as OpenAI, AISStream, OpenSky OAuth, TomTom, and FIRMS are brokered server-side. Proxy destinations are fixed or allowlisted, and the higher-risk paths add bounded requests, timeouts, response caps, and sanitized errors as appropriate. The only provider credentials intentionally exposed to the browser are Google Maps and Cesium ion; restrict both at the provider.
-- **No framework.** Vanilla JavaScript, **CesiumJS**, and **Vite** — plus **Google Photorealistic 3D Tiles** for the planet and the **OpenAI Realtime API** for voice. Fast to read, fast to hack on.
-
-```
-src/
-├── main.js                 # Bootstrap: Google 3D tiles, layer registration
-├── ui.js                   # Runtime UI — panels, HUD, styles, control facade
-├── hud.js                  # Intelligence HUD + AI scene summary
-├── mapStackController.js   # Google 3D / Bing / OSM switching
-├── iconOrientation.js      # Screen-projected world-space headings + horizon cull
-├── voice/                  # OpenAI Realtime session + 28 voice tools
-├── data/                   # One module per layer + management + context store
-│   └── local_data/         # Bundled datasets (per-folder provenance)
-└── scenes/                 # Cinematic scene director
-```
-
-See [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md) for the authoritative runtime reference.
+1. Go to https://platform.openai.com and sign in or create an account.
+2. **Set a monthly spending limit first:** go to **Settings → Limits → Monthly budget** and set it to something low like `$5`.
+3. Go to **API keys** → **"Create new secret key"**.
+4. Copy the key.
+5. In your `.env` file, find: `OPENAI_API_KEY=`
+6. Paste the key after the `=` sign.
 
 ---
 
-## 🔑 API Keys
+## Step 3 — Start the container
 
-**The legend, one more time:** 🟢 **no signup** — works out of the box · 🟡 **free key** — register, paste, done · 🔴 **metered** — a billing-enabled account; costs are small but real.
-
-Most of the globe is 🟢: flights (anonymous), military traffic, satellites, earthquakes, CCTV, radio, bikeshare, space missions, mapped installations, and every bundled dataset run with **zero keys**.
-
-### What you need for the good experience
-
-Five keys cover the fully keyed experience. Three currently offer no-cost developer access; Google Maps and OpenAI are usage-metered. Provider prices and allowances change, so use the linked pricing pages before relying on a budget estimate:
-
-| | Key | Why | Get it |
-|---|-----|-----|--------|
-| 🔴 | **Google Maps** *(required)* | The photorealistic 3D planet ([Map Tiles API](https://developers.google.com/maps/documentation/tile)) | [Google Cloud Console](https://console.cloud.google.com/) — metered; [check current pricing](https://developers.google.com/maps/billing-and-pricing/pricing) and URL-restrict it |
-| 🔴 | **OpenAI** | 🎙️ The voice experience + AI HUD summary. Want another provider behind the mic? PRs welcome | [platform.openai.com](https://platform.openai.com) — metered; [check current API pricing](https://openai.com/api/pricing/) |
-| 🟡 | **AISStream** | 🚢 Live global ships | [aisstream.io](https://aisstream.io) — free, seriously, it's a two-minute signup |
-| 🟡 | **NASA FIRMS** | 🔥 Live active fires | [firms.modaps.eosdis.nasa.gov](https://firms.modaps.eosdis.nasa.gov/api/map_key/) — free |
-| 🟡 | **TomTom** | 🚦 Real traffic instead of an approximate simulation | [developer.tomtom.com](https://developer.tomtom.com) — check the current developer allowance for your account |
-
-*What the TomTom key buys you: step 5 of [The First Five Minutes](#-the-first-five-minutes) for real — actual rush-hour density painted on the city instead of an approximate simulation.*
-
-### Cherry on top
-
-| | Key | Why | Get it |
-|---|-----|-----|--------|
-| 🟡 | **Cesium ion** | 🗺️ Bing imagery map stacks (public `assets:read` token) | [cesium.com/ion](https://cesium.com/ion) — [check the plan that fits your use](https://cesium.com/platform/cesium-ion/pricing/) |
-| 🟡 | **OpenSky** | ✈️ More flight-polling credits (🟢 anonymous works without) | [opensky-network.org](https://opensky-network.org) |
-| 🟡 | **Launch Library 2** | 🚀 Higher space-missions request allowance (🟢 works without) | [thespacedevs.com](https://thespacedevs.com) |
-
-All of them are worth getting. None of them are required to start.
+Open a terminal in the `gods-eye-view` folder and run:
 
 ```bash
-# Put keys in .env (see .env.example), or pass them as env vars:
-OPENAI_API_KEY="…" AISSTREAM_API_KEY="…" npm run dev -- --host localhost --port 4173
+./run.sh
 ```
 
-On macOS you can also keep any key in the Keychain and `./scripts/dev-fresh.sh` pulls them in — the `security add-generic-password` service names are documented in `.env.example`.
+**What happens next:**
+- The first run downloads the base image and installs all dependencies (3–8 minutes depending on your internet speed).
+- Subsequent starts take under a minute because everything is cached.
+- The script will print a green URL when the server is ready.
+- Open **http://localhost:4173** in your browser.
+- Press **Ctrl+C** in the terminal to stop.
 
-OpenSky can run fully anonymous (`OPENSKY_AUTH_MODE=anon`), or import OAuth credentials with `./scripts/opensky-import-client.sh /path/to/credentials.json`.
+### Useful commands
 
-### 💸 What it actually costs
-
-Honest numbers, roughly, as of mid-2026 — always check the provider pricing pages:
-
-| | Cost reality |
-|---|---|
-| **🟢 Most layers** | **$0, no signup.** OpenSky anon, USGS, CelesTrak, adsb.lol, city CCTV, Radio Browser, GBFS, Launch Library 2, bundled datasets. |
-| **🟡 Optional developer access** | AISStream, FIRMS, TomTom, Cesium ion, and authenticated OpenSky may offer no-cost access, but limits and permitted uses differ. Cesium ion and OpenSky in particular have plan or use restrictions; verify the current provider terms for your deployment. |
-| **🔴 Google 3D tiles** | More generous than you'd guess: billing counts **root tileset requests** — one buys up to **three hours** of unlimited tile rendering — and the first **1,000 per month are free**, then about **$6 per 1,000** (US pricing; [check the current page](https://developers.google.com/maps/billing-and-pricing/pricing), rates vary by billing region). A solo user rarely leaves the free tier. Still: restrict the key, set quotas, and configure a budget alert before sustained use. |
-| **🔴 OpenAI voice** | Realtime audio is usage-metered and the total depends on the selected model, conversation length, and audio volume. The app shows a live session estimate, warns at $2, and applies a **$5 in-app session cap**; provider-side usage limits remain the billing backstop. |
-
-### 🧗 The floor is low on purpose
-
-Everything above is the deliberately cheap baseline — enough to get a real taste of geospatial intelligence, GEOINT, and OSINT without ever talking to a sales team. You'll also notice the ceiling: terrestrial AIS goes quiet mid-ocean and satellite AIS costs real money; premium imagery, SAR, and the deeper commercial feeds live behind enterprise contracts. That's not a limit of the architecture — every layer here is a pattern you can point at your own data sources. This repo hands you the foundation; what you fuse into it is up to you.
-
-### 🔒 Sharing an instance
-
-By default nobody else can reach your server — it binds to localhost. To share on your LAN, opt in explicitly (`npm run dev -- --host 0.0.0.0 --port 4173`, or `HOST=0.0.0.0 ./scripts/dev-fresh.sh` on macOS/Linux) — but know that ⚠️ **a LAN-visible server brokers your configured API keys to anyone who can reach it.** Set the per-IP throttles (`GEV_RATELIMIT_OPENAI_PER_MIN`, `GEV_RATELIMIT_GOOGLE_PER_MIN` — see `.env.example`) and, before anything else, **set provider-side budget caps** (Google Cloud budgets, OpenAI usage limits): the throttles are app-level guards, not billing caps. Full threat model in [SECURITY.md](SECURITY.md).
+| What you want to do | Command |
+|---------------------|---------|
+| Start the app | `./run.sh` |
+| Stop the app | Press `Ctrl+C` in the terminal, or run `./run.sh --stop` in another terminal |
+| Rebuild after a code update | `./run.sh --rebuild` |
+| Check if the container is running | `podman ps` |
+| See the app's log output | `podman logs gods-eye-view-dev` |
 
 ---
 
-## 📋 Responsible & Open
+## Troubleshooting
 
-God's Eye View runs on **public data, clear sources, and local-first execution.** No secrets, no private datasets, no mystery scraping — anything involving a private key is brokered server-side. It has the visual grammar of a classified ops room, built entirely from open signals and inspectable code.
+**"No .env file found"**
+Run `cp .env.example .env` in the `gods-eye-view` folder, then edit `.env` to add your Google Maps key.
 
-**The line.** This project models **events, assets, infrastructure, and systems** — aircraft, vessels, satellites, fires, cameras, cities. It does not build features for named-person search, face recognition, or tracking individuals, and pull requests that cross that line won't be merged. People are not a query type here.
+**The globe loads but is grey / no 3D buildings**
+Your Google Maps key is likely missing or incorrect.  Double-check step 1h.  Make sure there are no spaces around the `=` sign in `.env`.
 
-**Come build it.** This is the canonical live 3D client from the project that kicked off the recent wave of spatial-intelligence tools — and it's a canvas: the layers here are the signals one person could find and fuse. Add a city pack, a data source, a style, a voice tool. It's the window through which you see the world; bring that window to others.
+**"GOOGLE_MAPS_API_KEY is not set"**
+Open `.env` and make sure the line reads exactly:
+`GOOGLE_MAPS_API_KEY=AIzaSy...` (your real key, no quotes, no spaces).
 
-**Status:** An evolving open-source client for exploration and learning — a fast, hackable foundation, not a hardened production service. Released under the **[MIT License](LICENSE)**. Bundled and live datasets carry their own terms — see **[DATA_SOURCES.md](DATA_SOURCES.md)**. Security model: **[SECURITY.md](SECURITY.md)**. Want to contribute? **[CONTRIBUTING.md](CONTRIBUTING.md)**.
+**The page won't load at all**
+The container may still be starting.  Wait 30–60 seconds and try refreshing.  If it still doesn't load, run `podman logs gods-eye-view-dev` to see any error messages.
 
-<sub>Media note: Bilawal Sidhu created and owns the 17 capture GIFs on this page. He also published the two README PNGs in the existing public project and authorized their continued inclusion here. Any appearance by Bilawal is included with his permission. These files are project documentation, not MIT-licensed standalone assets. Platform interfaces, trademarks, avatars, data, and third-party imagery visible within them remain subject to their respective owners' terms. See [media provenance](docs/media/README.md) and [source terms](DATA_SOURCES.md).</sub>
-
-> [!IMPORTANT]
-> God's Eye View is an exploratory visualization of public and third-party data.
-> Data may be delayed, incomplete, modeled, inferred, or wrong. Do not use it
-> for flight or maritime navigation, emergency response, medical or health
-> decisions, investment decisions, or other safety-critical or operational
-> purposes. Verify important information with authoritative sources.
-
----
-
-## 🧭 What's Next
-
-First — thank you. To everyone who watched the God-view demos and went off to build their own, and to everyone who kept asking for the code: I'm grateful. And when I polled whether this should go open source, you weren't subtle about it:
-
-<img src="docs/media/open-source-survey.png" alt="Community survey on open-sourcing God's Eye View" width="460">
-
-So here it is. Step inside the spy-thriller cockpit — except the data is real — and let's turn this into our shared sandbox for making sense of the world, and have fun doing it. This repo is the baseline, it stays open, and the whole point is for you to break things and bolt on layers we haven't thought of yet.
-
-One heads-up from the inside: build in this space for a week and you learn that **the present is the cheap part**. The moment you try to go back in time — tiling, serving, and scrubbing *what happened* and *what changed* at any real resolution — the data gets expensive and the compute gets brutal. For that, we're building something cool. More in the future — [halfpixel.ai](https://halfpixel.ai).
+**Port 4173 is already in use**
+Another program is using that port.  Set a different port in your `.env` file:
+`PORT=4174`
+Then restart with `./run.sh`.  Open http://localhost:4174 instead.
 
 ---
 
-<div align="center">
+## Quick cost summary
 
-▶️ [Watch the God's Eye View series](https://youtube.com/playlist?list=PL6qSg2I-7_koPbDnSMo0QeeHX_RknA2uv&si=nBGYMoHWQw41v93Q) · 📬 [Map the World](https://maptheworld.ai/) — the newsletter behind the project
+| Layer | Cost | Notes |
+|-------|------|-------|
+| 3D photorealistic globe | 🔴 Metered | ~1,000 free sessions/month — hard to exhaust solo |
+| Voice control + AI HUD | 🔴 Metered | Charged per minute of voice; built-in $5 session cap |
+| Live aircraft (OpenSky) | 🟡 Free | Anonymous or authenticated — both free |
+| Live ships (AISStream) | 🟡 Free | Free API |
+| Satellites, earthquakes, fires | 🟡 Free | Public data sources |
+| Public cameras (CCTV) | 🟡 Free | City open-data feeds |
+| Traffic (TomTom) | 🟡 Free tier | 50k tile requests/day free |
+| Alternative map styles (Cesium) | 🟡 Free tier | Public assets token |
+| Rocket launches, radio stations | 🟡 Free | Public APIs |
 
-**🌐 God's Eye View. No place left behind.**
+For typical solo exploring on your own machine: **expect $0 per month** unless you use voice control heavily.
 
-</div>
+---
+
+*See also: [SECURITY.md](SECURITY.md) for how your API keys are protected, and [DATA_SOURCES.md](DATA_SOURCES.md) for details on every live data feed.*
+
+## Disclaimer
+- Created by Erwin Friethoff, Security Architect at IBM. 
+- This is 100% free and open source and not in any way endorsed or supported by IBM. All done on personal title. 
+- If you have any questions, please reach out to me on LinkedIn. I’m happy to help.
+- 100% free and open source. No warranty. 
+- GitHub Issues: Report bugs or request features
