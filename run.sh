@@ -76,7 +76,7 @@ if [ ! -f "${ENV_FILE}" ]; then
   echo "    cp .env.example .env"
   echo "    # then open .env in a text editor and fill in GOOGLE_MAPS_API_KEY"
   echo ""
-  echo "  See SETUP.md for a step-by-step guide to getting your keys."
+  echo "  See README.md for a step-by-step guide to getting your keys."
   exit 1
 fi
 
