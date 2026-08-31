@@ -1,0 +1,30 @@
+# .containerignore — files excluded from the container image build context
+# Changed: Tue Sep  1 00:00:00 CEST 2026 — initial file
+#
+# These files are NOT copied into the container image.
+# This keeps the image small, fast to build, and — most importantly — free of secrets.
+
+# ── Secrets — NEVER bake these into an image ──────────────────────────────────
+.env
+
+# ── Generated / installed files ───────────────────────────────────────────────
+node_modules/
+dist/
+
+# ── Runtime caches (re-created inside the container on first run) ─────────────
+.gev-cache/
+.gev-logs/
+
+# ── Development / QA artifacts ────────────────────────────────────────────────
+screenshots/
+qa-shots/
+output/
+.gstack/
+
+# ── Version control ───────────────────────────────────────────────────────────
+.git/
+.gitignore
+
+# ── OS / editor noise ─────────────────────────────────────────────────────────
+.DS_Store
+*.log
