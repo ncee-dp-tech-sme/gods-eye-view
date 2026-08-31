@@ -13,7 +13,7 @@ A container — think of it as a self-contained copy of the app running on your 
 > This repository is forked from [bilawalsidhu/gods-eye-view](https://github.com/bilawalsidhu/gods-eye-view) All kudos to them.
 > This just a ccontainerized version of the original work, no additional features. The original README for this project can be read at [README_gods-eye-view](README_gods-eye-view.md)
 
-> The code and configuration files can be found in this repository https://github.com/ncee-dp-tech-sme/gods-eye-view
+> The code and configuration files can be found in this repository under the feature/bob-containerization branch https://github.com/ncee-dp-tech-sme/gods-eye-view
 ---
 
 ## Before you start — what you need installed
