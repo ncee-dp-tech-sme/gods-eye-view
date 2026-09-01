@@ -4,7 +4,8 @@
 # Changed: Tue Sep  1 00:00:00 CEST 2026 — removed explicit curl install; nodejs-24-minimal already ships curl-minimal
 # Changed: Tue Sep  1 00:00:00 CEST 2026 — chown node_modules to uid 1000 after npm ci so Vite cache writes succeed at runtime
 # Changed: Tue Sep  1 01:34:45 CEST 2026 — invoke vite directly instead of via npm run to suppress SIGINT error noise on Ctrl+C; redirect npm logs to /tmp
-# Changed: Tue Sep  1 02:27:34 CEST 2026 — bump sharp ^0.34.5 -> ^0.35.4 (CVE-2026-59876, CVE-2026-59877, CVE-2026-65898); add overrides.dompurify ^3.4.13 (GHSA-55q2-fjhq-7xh7, GHSA-c2j3-45gr-mqc4)
+# Changed: Tue Sep  1 02:27:34 CEST 2026 — bump sharp ^0.34.5 -> ^0.35.4 (CVE-2026-65898/GHSA-f88m-g3jw-g9cj); add overrides.dompurify ^3.4.13 (GHSA-55q2-fjhq-7xh7, GHSA-c2j3-45gr-mqc4)
+# Changed: Tue Sep  1 02:37:50 CEST 2026 — add overrides.protobufjs ^8.6.5 -> resolves 8.8.0 (CVE-2026-59876/GHSA-jfj6-75fj-8934, CVE-2026-59877/GHSA-j3f2-48v5-ccww)
 #
 # ─────────────────────────────────────────────────────────────────────────────
 # Plain-English explanation of what this file does:
