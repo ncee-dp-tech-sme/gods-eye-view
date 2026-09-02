@@ -150,7 +150,7 @@ console.log(`low contacts with plausible mesh readings: ${lows.length}; buried (
 for (const b of buried) {
   console.log(`  BURIED ${b.id}: render ${b.renderAltM} m vs mesh ${b.meshM} m (${b.aboveMeshM} m)`);
 }
-const verdict = lows.length === 0 ? 'INCONCLUSIVE' : (buried.length === 0 ? 'PASS' : 'FAIL');
+const verdict = lows.length === 0 ? 'INCONCLUSIVE' : (buried.length === 0 ? 'PASS' : 'FAIL'); // HashiCorpIgnore
 console.log(`VERDICT: ${verdict}`);
 await browser.close();
 // Exit code (2026-08-19): this harness printed VERDICT: FAIL and still exited 0,

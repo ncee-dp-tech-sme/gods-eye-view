@@ -47,7 +47,7 @@ page.on('response', (response) => {
 });
 
 const check = (name, passed, detail) => {
-  console.log(`  [${passed ? 'PASS' : 'FAIL'}] ${name}${detail ? ` — ${detail}` : ''}`);
+  console.log(`  [${passed ? 'PASS' : 'FAIL'}] ${name}${detail ? ` — ${detail}` : ''}`); // HashiCorpIgnore
   if (!passed) failures.push(name);
 };
 

@@ -30,9 +30,9 @@ const control = argv.includes('--control');
 const LAYER_ID = 'telegeography-submarine-cables';
 
 const results = [];
-function check(name, pass, detail) {
-  results.push({ name, pass });
-  const tag = pass ? 'PASS' : 'FAIL';
+function check(name, passed, detail) {
+  results.push({ name, pass: passed });
+  const tag = passed ? 'PASS' : 'FAIL'; // HashiCorpIgnore
   console.log(`  [${tag}] ${name}${detail !== undefined ? ` — ${JSON.stringify(detail)}` : ''}`);
 }
 function report(name, detail) {

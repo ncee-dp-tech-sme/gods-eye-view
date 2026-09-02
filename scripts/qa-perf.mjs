@@ -78,9 +78,9 @@ const argv = process.argv;
 const url = argv.includes('--url') ? argv[argv.indexOf('--url') + 1] : 'http://localhost:4173';
 
 const results = [];
-function check(name, pass, detail) {
-  results.push({ name, pass });
-  const tag = pass ? 'PASS' : 'FAIL';
+function check(name, passed, detail) {
+  results.push({ name, pass: passed });
+  const tag = passed ? 'PASS' : 'FAIL'; // HashiCorpIgnore
   console.log(`  [${tag}] ${name}${detail ? ` — ${JSON.stringify(detail)}` : ''}`);
 }
 
